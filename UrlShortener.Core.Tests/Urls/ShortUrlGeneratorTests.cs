@@ -1,9 +1,12 @@
 using FluentAssertions;
+using UrlShortener.Core.Tests.TestDoubles;
+using UrlShortener.Core.Urls.Add;
 
-namespace UrlShortener.Core.Tests;
+namespace UrlShortener.Core.Tests.Urls;
 
 public class ShortUrlGeneratorTests
-{
+{       
+
     [Fact]
     public void Should_return_short_url_for_zero()
     {
@@ -26,6 +29,6 @@ public class ShortUrlGeneratorTests
         var result = shortUrlGenerator.GenerateUniqueUrl();
 
         result.Should().Be("2bJ");
-    }
+    }   
 }
 
