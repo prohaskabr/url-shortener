@@ -32,8 +32,9 @@ public class AddUrlTests
 
         var response = await _handler.HandleAsync(request, default);
 
-        response.ShortUrl.Should().NotBeNull();
-        response.ShortUrl.Should().Be(response.ShortUrl);
+        response.Succeeded.Should().BeTrue();
+        response.Value!.ShortUrl.Should().NotBeNull();
+        response.Value.ShortUrl.Should().Be(response.Value!.ShortUrl);
     }
 
     [Fact]
@@ -42,8 +43,9 @@ public class AddUrlTests
         var request = CreateAddUrlRequest();
 
         var response = await _handler.HandleAsync(request, default);
-
-        _urlDataStore.Should().ContainKey(response.ShortUrl);            
+        
+        response.Succeeded.Should().BeTrue();
+        _urlDataStore.Should().ContainKey(response.Value!.ShortUrl);            
     }
 
     [Fact]
@@ -53,13 +55,25 @@ public class AddUrlTests
 
         var response = await _handler.HandleAsync(request, default);
 
-        _urlDataStore.Should().ContainKey(response.ShortUrl);
-        _urlDataStore[response.ShortUrl].CreatedBy.Should().Be(request.CreatedBy);
-        _urlDataStore[response.ShortUrl].CreatedAt.Should().Be(_timeProvider.GetLocalNow());
+        response.Succeeded.Should().BeTrue();
+        _urlDataStore.Should().ContainKey(response.Value!.ShortUrl);
+        _urlDataStore[response.Value.ShortUrl].CreatedBy.Should().Be(request.CreatedBy);
+        _urlDataStore[response.Value.ShortUrl].CreatedAt.Should().Be(_timeProvider.GetLocalNow());
     }
 
-    private static AddUrlRequest CreateAddUrlRequest()
+    [Fact]
+    public async Task Should_return_error_if_created_by_is_empty()
     {
-        return new AddUrlRequest(new Uri("https://www.example.com"),"admin");
+        var request =  CreateAddUrlRequest("");
+
+        var response = await _handler.HandleAsync(request, default);
+
+        response.Succeeded.Should().BeFalse();
+        response.Error.Code.Should().Be("missing_value");
+    }
+
+    private static AddUrlRequest CreateAddUrlRequest(string createdBy = "admin")
+    {
+        return new AddUrlRequest(new Uri("https://www.example.com"), createdBy);
     }
 }
