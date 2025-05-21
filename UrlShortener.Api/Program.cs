@@ -1,4 +1,6 @@
 using Azure.Identity;
+using UrlShortener.Api.Extensions;
+using UrlShortener.Core.Urls.Add;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +13,11 @@ if (!string.IsNullOrEmpty(keyVaultName))
         new DefaultAzureCredential());
 }
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddUrlFeature();
+
 
 var app = builder.Build();
 
@@ -29,8 +30,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 
-app.MapControllers();
+
+app.MapPost("/api/urls", async (AddUrlHandler handler, AddUrlRequest request, CancellationToken token) =>
+{
+    var requestWithUser = request with { CreatedBy = "testuser@test.com" };
+
+
+    var result = await handler.HandleAsync(requestWithUser, token);
+
+    return result.Match(
+        result => Results.Created($"api/url/{result.ShortUrl}", result),
+        error => Results.BadRequest(error));
+});
+
 
 app.Run();

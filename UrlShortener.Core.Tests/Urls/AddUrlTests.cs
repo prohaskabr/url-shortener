@@ -9,7 +9,7 @@ namespace UrlShortener.Core.Tests.Urls;
 public class AddUrlTests
 {
     private readonly InMemoryUrlDataStore _urlDataStore;
-    private readonly UrlHandler _handler;
+    private readonly AddUrlHandler _handler;
     private readonly FakeTimeProvider _timeProvider;
 
     public AddUrlTests()
@@ -22,7 +22,7 @@ public class AddUrlTests
 
         _urlDataStore = new InMemoryUrlDataStore();
 
-        _handler = new UrlHandler(shortUrlGenerator, _urlDataStore, _timeProvider);
+        _handler = new AddUrlHandler(shortUrlGenerator, _urlDataStore, _timeProvider);
     }
 
     [Fact]

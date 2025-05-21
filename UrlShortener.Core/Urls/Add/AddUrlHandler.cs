@@ -1,12 +1,12 @@
 ﻿namespace UrlShortener.Core.Urls.Add;
 
-public class UrlHandler
+public class AddUrlHandler
 {
     private readonly ShortUrlGenerator _shortUrlGenerator;
     private readonly IUrlDataStore _urlDataStore;
     private readonly TimeProvider _timeProvider;
 
-    public UrlHandler(ShortUrlGenerator shortUrlGenerator, IUrlDataStore urlDataStore, TimeProvider timeProvider)
+    public AddUrlHandler(ShortUrlGenerator shortUrlGenerator, IUrlDataStore urlDataStore, TimeProvider timeProvider)
     {
         _shortUrlGenerator = shortUrlGenerator;
         _urlDataStore = urlDataStore;
