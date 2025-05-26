@@ -34,6 +34,9 @@ app.UseHttpsRedirection();
 
 
 
+app.MapGet("/", () => "URL Shortener API - /api/urls");
+app.MapGet("/api/urls", () => "Welcome to the URL Shortener API!");
+
 app.MapPost("/api/urls", async (AddUrlHandler handler, AddUrlRequest request, CancellationToken token) =>
 {
     var requestWithUser = request with { CreatedBy = "testuser@test.com" };
