@@ -1,0 +1,10 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@Api_Host =  https://api-2p2jzzp4rm2og.azurewebsites.net
+
+POST {{Api_Host}}/api/urls
+Accept: application/json
+Content-Type: application/json
+{
+    "LongUrl": "http://www.google.com",
+}
+###
