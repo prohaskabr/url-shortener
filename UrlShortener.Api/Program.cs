@@ -1,6 +1,7 @@
 using Azure.Identity;
 using UrlShortener.Api.Extensions;
 using UrlShortener.Core.Urls.Add;
+using UrlShortener.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddUrlFeature();
+builder.Services.AddCosmosUrlDataStore(builder.Configuration);
 
 
 var app = builder.Build();
