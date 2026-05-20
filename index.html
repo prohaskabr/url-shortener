@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autores da Bíblia — Novo e Velho Testamento</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0b0e;
+    --surface: #13151a;
+    --surface2: #1b1e25;
+    --border: rgba(180,190,220,0.09);
+    --border2: rgba(180,190,220,0.18);
+    --text: #dde4f0;
+    --text-muted: #8896aa;
+    --text-dim: #445060;
+
+    /* NT palette — warmer golds */
+    --nt-apostle:    #8a7ef0;
+    --nt-apostle-bg: rgba(138,126,240,0.13);
+    --nt-revelation:    #3a8fd4;
+    --nt-revelation-bg: rgba(58,143,212,0.13);
+    --nt-companion:    #3aad85;
+    --nt-companion-bg: rgba(58,173,133,0.13);
+    --nt-relative:    #c07a3a;
+    --nt-relative-bg: rgba(192,122,58,0.13);
+    --nt-unknown:    #888;
+    --nt-unknown-bg: rgba(136,136,136,0.13);
+
+    /* OT palette */
+    --ot-torah:    #c9a55a;
+    --ot-torah-bg: rgba(201,165,90,0.13);
+    --ot-history:  #5aad85;
+    --ot-history-bg: rgba(90,173,133,0.13);
+    --ot-wisdom:   #9a7fd4;
+    --ot-wisdom-bg: rgba(154,127,212,0.13);
+    --ot-prophets: #d47a5a;
+    --ot-prophets-bg: rgba(212,122,90,0.13);
+    --ot-deutero:  #5a9ad4;
+    --ot-deutero-bg: rgba(90,154,212,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 10% 5%, rgba(138,126,240,0.035) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 95%, rgba(201,165,90,0.035) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 56px 24px 90px; }
+
+  /* ── Global header ── */
+  .main-header { text-align: center; margin-bottom: 64px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px;
+  }
+  .main-header h1 {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(34px, 5.5vw, 58px);
+    font-weight: 300; line-height: 1.12; color: var(--text);
+    letter-spacing: -.015em; margin-bottom: 14px;
+  }
+  .main-header h1 span.nt-col { color: #a99ae8; font-style: italic; }
+  .main-header h1 span.ot-col { color: #c9a55a; font-style: italic; }
+  .main-header h1 .amp { color: var(--text-dim); font-style: normal; }
+  .header-rule { width: 70px; height: 1px; margin: 18px auto 18px; background: linear-gradient(90deg, transparent, var(--text-dim), transparent); }
+  .main-header p { font-size: 14px; color: var(--text-muted); max-width: 520px; margin: 0 auto; line-height: 1.7; }
+
+  /* ── Nav tabs ── */
+  .nav-tabs {
+    display: flex; gap: 0;
+    border: 0.5px solid var(--border2);
+    border-radius: 10px; overflow: hidden;
+    margin-bottom: 56px; background: var(--surface);
+  }
+  .nav-tab {
+    flex: 1; padding: 13px 20px; text-align: center;
+    cursor: pointer; font-size: 13px; font-weight: 400;
+    color: var(--text-muted); border: none; background: none;
+    transition: background .2s, color .2s;
+    border-right: 0.5px solid var(--border);
+  }
+  .nav-tab:last-child { border-right: none; }
+  .nav-tab:hover { background: var(--surface2); color: var(--text); }
+  .nav-tab.active { color: var(--text); font-weight: 500; background: var(--surface2); }
+  .nav-tab .tab-sub { font-size: 11px; color: var(--text-dim); display: block; margin-top: 2px; font-weight: 300; }
+
+  /* ── Testament blocks ── */
+  .testament { display: none; }
+  .testament.visible { display: block; }
+
+  /* ── Testament heading ── */
+  .testament-header { margin-bottom: 36px; }
+  .testament-header h2 {
+    font-family: 'Crimson Pro', serif; font-size: clamp(22px, 3.5vw, 32px);
+    font-weight: 300; line-height: 1.2; margin-bottom: 8px;
+  }
+  .testament-header p { font-size: 13px; color: var(--text-muted); max-width: 560px; line-height: 1.65; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 7px 16px;
+    margin-bottom: 40px; padding: 13px 16px;
+    border: 0.5px solid var(--border); border-radius: 10px;
+    background: var(--surface);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ── Divider between testaments ── */
+  .testament-divider {
+    display: flex; align-items: center; gap: 16px;
+    margin: 64px 0 56px;
+  }
+  .testament-divider-line { flex: 1; height: 0.5px; background: var(--border); }
+  .testament-divider-label {
+    font-size: 10px; font-weight: 500; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--text-dim); white-space: nowrap;
+  }
+
+  /* ── Section ── */
+  .section { margin-bottom: 44px; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .section-line { flex: 1; height: 0.5px; background: var(--border); }
+  .section-label { font-size: 10px; font-weight: 500; letter-spacing: .13em; text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+
+  /* ── Cards ── */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+  .card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 12px; padding: 15px 17px; cursor: pointer;
+    transition: border-color .2s, background .2s, transform .15s;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: var(--acc); opacity: 0; transition: opacity .2s;
+  }
+  .card:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-1px); }
+  .card:hover::before { opacity: 1; }
+  .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500; flex-shrink: 0;
+  }
+  .card-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .card-dates { font-size: 11px; color: var(--text-muted); font-family: 'Crimson Pro', serif; font-style: italic; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; margin-bottom: 7px; }
+  .books { font-size: 11px; color: var(--text-muted); font-style: italic; font-family: 'Crimson Pro', serif; line-height: 1.5; }
+  .deutero-tag {
+    display: inline-block; font-size: 9px; font-weight: 500; padding: 1px 5px;
+    border-radius: 10px; background: rgba(90,154,212,0.16); color: #5a9ad4;
+    margin-left: 5px; vertical-align: middle; letter-spacing: .03em;
+  }
+
+  /* ── Modal ── */
+  .modal-wrap {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.72); backdrop-filter: blur(5px);
+    z-index: 999; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-wrap.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 0.5px solid var(--border2);
+    border-radius: 16px; padding: 26px 28px; max-width: 450px; width: 100%;
+    position: relative; animation: mIn .18s ease;
+  }
+  @keyframes mIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  .modal-close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none; font-size: 20px;
+    color: var(--text-muted); cursor: pointer; transition: color .15s; line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  .m-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 500; margin-bottom: 11px;
+  }
+  .m-name { font-family: 'Crimson Pro', serif; font-size: 21px; font-weight: 400; color: var(--text); margin-bottom: 3px; }
+  .m-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; font-style: italic; }
+  .m-div { height: 0.5px; background: var(--border); margin: 11px 0; }
+  .m-st { font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .m-text { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+  .m-books { font-family: 'Crimson Pro', serif; font-size: 14px; color: var(--ot-torah); font-style: italic; margin-top: 3px; }
+  .m-canon { font-size: 11px; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--border); }
+
+  /* ── Footer ── */
+  .footer { text-align: center; margin-top: 64px; padding-top: 22px; border-top: 0.5px solid var(--border); }
+  .footer p { font-size: 12px; color: var(--text-dim); line-height: 1.9; }
+
+  @media (max-width: 520px) {
+    .cards { grid-template-columns: 1fr; }
+    .main-header { margin-bottom: 40px; }
+    .modal { padding: 20px 18px; }
+    .nav-tab .tab-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="main-header">
+    <div class="eyebrow">Cânon Bíblico — Séc. X a.C. ao Séc. I d.C.</div>
+    <h1>
+      <span class="nt-col">Novo Testamento</span>
+      <span class="amp"> &amp; </span>
+      <span class="ot-col">Velho Testamento</span>
+    </h1>
+    <div class="header-rule"></div>
+    <p>Autores, datas aproximadas e contexto histórico de todos os livros da Bíblia. Clique em qualquer card para ver mais detalhes.</p>
+  </div>
+
+  <!-- Nav tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('all')">
+      Todos os livros
+      <span class="tab-sub">Visão completa</span>
+    </button>
+    <button class="nav-tab" onclick="showTab('nt')">
+      Novo Testamento
+      <span class="tab-sub">Séc. I d.C. · 27 livros</span>
+    </button>
+    <button class="nav-tab" onclick="showTab('ot')">
+      Velho Testamento
+      <span class="tab-sub">Séc. X–I a.C. · 46–73 livros</span>
+    </button>
+  </div>
+
+  <!-- ══ NOVO TESTAMENTO ══ -->
+  <div class="testament visible" id="t-nt">
+    <div class="testament-header">
+      <h2 style="color:#a99ae8">Novo Testamento</h2>
+      <p>Escritos do séc. I d.C. por apóstolos, companheiros de apóstolos e irmãos de Jesus.</p>
+    </div>
+
+    <div class="legend" id="leg-nt"></div>
+    <div id="sec-nt"></div>
+  </div>
+
+  <!-- Divider (shown only in "all" mode) -->
+  <div class="testament-divider" id="divider">
+    <div class="testament-divider-line"></div>
+    <div class="testament-divider-label">Velho Testamento</div>
+    <div class="testament-divider-line"></div>
+  </div>
+
+  <!-- ══ VELHO TESTAMENTO ══ -->
+  <div class="testament visible" id="t-ot">
+    <div class="testament-header">
+      <h2 style="color:#c9a55a">Velho Testamento</h2>
+      <p>Escritos do séc. X ao I a.C. — desde Moisés até os profetas pós-exílio.</p>
+    </div>
+
+    <div class="legend" id="leg-ot"></div>
+    <div id="sec-ot"></div>
+  </div>
+
+  <div class="footer">
+    <p>
+      As datas são estimativas baseadas em consenso acadêmico e variam entre tradições.<br>      
+    </p>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-wrap" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="m-avatar" id="m-av"></div>
+    <div class="m-name" id="m-name"></div>
+    <div class="m-meta" id="m-meta"></div>
+    <div class="m-st">Livros escritos</div>
+    <div class="m-books" id="m-books"></div>
+    <div class="m-div"></div>
+    <div class="m-st">Contexto e autoria</div>
+    <div class="m-text" id="m-detail"></div>
+    <div class="m-canon" id="m-canon"></div>
+  </div>
+</div>
+
+<script>
+/* ─── DATA ─────────────────────────────────────────── */
+
+const NT_LEGEND = [
+  { color: '#8a7ef0', label: 'Um dos 12 apóstolos' },
+  { color: '#3a8fd4', label: 'Apóstolo por revelação' },
+  { color: '#3aad85', label: 'Companheiro de apóstolo' },
+  { color: '#c07a3a', label: 'Irmão de Jesus' },
+  { color: '#888',    label: 'Autor desconhecido' },
+];
+
+const OT_LEGEND = [
+  { color: '#c9a55a', label: 'Torá / Pentateuco' },
+  { color: '#5aad85', label: 'Livros históricos' },
+  { color: '#9a7fd4', label: 'Livros de sabedoria' },
+  { color: '#d47a5a', label: 'Livros proféticos' },
+  { color: '#5a9ad4', label: 'Deuterocanônicos' },
+];
+
+const NT_GROUPS = [
+  {
+    label: 'Um dos 12 Apóstolos',
+    authors: [
+      { name:'Mateus', initials:'MA', dates:'c. 1 a.C. – c. 74 d.C.', role:'Apóstolo (um dos 12)', type:'nt-apostle',
+        books:'Evangelho de Mateus',
+        detail:'Um dos 12 apóstolos originais. Antes chamado Levi, era coletor de impostos em Cafarnaum. Escreveu seu Evangelho provavelmente em Antioquia, direcionado a leitores judeus. Testemunha ocular do ministério de Jesus.',
+        relation:'Chamado diretamente por Jesus; publicano convertido.', canon:'Cânon universal cristão' },
+      { name:'João', initials:'JO', dates:'c. 6 d.C. – c. 100 d.C.', role:'Apóstolo (um dos 12)', type:'nt-apostle',
+        books:'Evangelho de João, 1 João, 2 João, 3 João, Apocalipse',
+        detail:'Um dos apóstolos mais próximos de Jesus, no círculo íntimo com Pedro e Tiago. Escreveu o quarto Evangelho, três cartas e o Apocalipse. Único apóstolo que provavelmente morreu de morte natural, em Éfeso.',
+        relation:"Filho de Zebedeu; 'o discípulo amado'.", canon:'Cânon universal cristão' },
+      { name:'Pedro', initials:'PE', dates:'c. 1 a.C. – c. 64–68 d.C.', role:'Apóstolo (um dos 12)', type:'nt-apostle',
+        books:'1 Pedro, 2 Pedro',
+        detail:'Simão Pedro era pescador de Betsaida. Tornou-se o líder dos apóstolos. Martirizado em Roma sob Nero, crucificado de cabeça para baixo a seu próprio pedido.',
+        relation:"Líder dos 12. 'A pedra' sobre a qual Jesus disse edificar sua Igreja.", canon:'Cânon universal cristão' },
+    ]
+  },
+  {
+    label: 'Apóstolo por Revelação',
+    authors: [
+      { name:'Paulo de Tarso', initials:'PA', dates:'c. 5 d.C. – c. 64–67 d.C.', role:'Apóstolo por revelação', type:'nt-revelation',
+        books:'Romanos, 1–2 Coríntios, Gálatas, Efésios, Filipenses, Colossenses, 1–2 Tessalonicenses, 1–2 Timóteo, Tito, Filêmon',
+        detail:'Saulo de Tarso era fariseu que perseguia cristãos até ter uma visão de Jesus ressuscitado. Tornou-se o maior missionário do NT. Seus 13 escritos formam quase metade do Novo Testamento. Martirizado em Roma.',
+        relation:'Não conheceu Jesus pessoalmente; chamado em visão no caminho a Damasco. Reconhecido apóstolo pelos outros (Gl 2:9).', canon:'Cânon universal cristão' },
+    ]
+  },
+  {
+    label: 'Companheiros de Apóstolos',
+    authors: [
+      { name:'Marcos', initials:'MC', dates:'c. 15 d.C. – c. 68 d.C.', role:'Companheiro de Pedro e Paulo', type:'nt-companion',
+        books:'Evangelho de Marcos',
+        detail:'João Marcos era primo de Barnabé. Seu Evangelho é o mais antigo (~65–70 d.C.) e reflete as pregações de Pedro em Roma. A tradição o coloca como fundador da Igreja de Alexandria.',
+        relation:'Primo de Barnabé; intérprete e secretário de Pedro em Roma; acompanhou Paulo na 1ª viagem missionária.', canon:'Cânon universal cristão' },
+      { name:'Lucas', initials:'LC', dates:'c. 10 d.C. – c. 84 d.C.', role:'Médico; companheiro de Paulo', type:'nt-companion',
+        books:'Evangelho de Lucas, Atos dos Apóstolos',
+        detail:'Único autor gentio (não-judeu) do NT e o mais prolífico em número de palavras. Acompanhou Paulo (uso do "nós" em Atos). Destaca mulheres, pobres e estrangeiros. Provavelmente morreu na Grécia.',
+        relation:'Médico gentio; companheiro de viagem de Paulo em várias missões.', canon:'Cânon universal cristão' },
+    ]
+  },
+  {
+    label: 'Irmãos de Jesus',
+    authors: [
+      { name:'Tiago (irmão de Jesus)', initials:'TJ', dates:'c. 1 d.C. – c. 62 d.C.', role:'Irmão de Jesus; líder em Jerusalém', type:'nt-relative',
+        books:'Carta de Tiago',
+        detail:'Não acreditava em Jesus durante o ministério (Jo 7:5). Após uma aparição do ressuscitado, converteu-se e liderou a Igreja de Jerusalém. Conhecido como "Tiago o Justo". Apedrejado pelo Sinédrio em 62 d.C.',
+        relation:'Irmão (ou primo) de Jesus. Não era dos 12. Líder máximo da Igreja de Jerusalém.', canon:'Cânon universal cristão' },
+      { name:'Judas (irmão de Tiago)', initials:'JD', dates:'c. 1 d.C. – c. 80 d.C.', role:'Irmão de Jesus e de Tiago', type:'nt-relative',
+        books:'Carta de Judas',
+        detail:'Judas (Jude) se identifica como "irmão de Tiago", provavelmente também irmão de Jesus. Sua carta alerta urgentemente contra falsos mestres. Não confundir com Judas Iscariotes.',
+        relation:'Irmão de Jesus e de Tiago. Não era dos 12 apóstolos.', canon:'Cânon universal cristão' },
+    ]
+  },
+  {
+    label: 'Autor Desconhecido',
+    authors: [
+      { name:'Autor de Hebreus', initials:'?', dates:'c. 30–90 d.C. (incerto)', role:'Identidade desconhecida', type:'nt-unknown',
+        books:'Carta aos Hebreus',
+        detail:'O maior debate de autoria bíblica. Orígenes (séc. III): "Somente Deus sabe quem a escreveu". Candidatos: Apolo, Barnabé, Priscila, Lucas. O estilo grego é mais refinado que o de Paulo.',
+        relation:'Candidatos: Paulo, Apolo, Barnabé, Priscila, Lucas.', canon:'Cânon universal cristão' },
+    ]
+  },
+];
+
+const OT_GROUPS = [
+  {
+    label: 'Torá — Pentateuco',
+    authors: [
+      { name:'Moisés (atribuído)', initials:'MO', dates:'c. 1393–1273 a.C. (trad.)', role:'Profeta e libertador de Israel', type:'ot-torah',
+        books:'Gênesis, Êxodo, Levítico, Números, Deuteronômio',
+        detail:'A tradição atribui o Pentateuco a Moisés. A crítica moderna identifica múltiplas fontes (J, E, D, P) compostas entre séc. X e V a.C. Moisés possivelmente escreveu núcleos legais, mas a redação final é posterior.',
+        canon:'Cânon universal' },
+    ]
+  },
+  {
+    label: 'Livros Históricos',
+    authors: [
+      { name:'Josué (atribuído)', initials:'JS', dates:'c. 1200 a.C. (eventos); séc. VII–VI a.C. (redação)', role:'Sucessor de Moisés', type:'ot-history',
+        books:'Josué',
+        detail:'Narra a conquista de Canaã. Tradição atribui a Josué, mas estudiosos identificam redação deuteronomista do séc. VII–VI a.C., durante Josias ou no exílio.',
+        canon:'Cânon universal' },
+      { name:'Samuel / autores anônimos', initials:'SM', dates:'Séc. XI a.C. – séc. VI a.C.', role:'Profeta e juiz de Israel', type:'ot-history',
+        books:'Juízes, Rute, 1–2 Samuel',
+        detail:'Composição complexa. O Talmude atribui Juízes e Rute a Samuel. Os livros de Samuel combinam fontes do séc. X–IX a.C. com redação deuteronomista posterior.',
+        canon:'Cânon universal' },
+      { name:'Escola Deuteronomista', initials:'DH', dates:'Séc. VII–VI a.C.', role:'Escola teológica do período do exílio', type:'ot-history',
+        books:'1–2 Reis',
+        detail:'A "História Deuteronomista" foi organizada durante o reinado de Josias (séc. VII a.C.) e revisada no exílio (séc. VI a.C.) por uma escola teológica, não um único autor.',
+        canon:'Cânon universal' },
+      { name:'Esdras e Neemias (atribuídos)', initials:'EN', dates:'Séc. V a.C.', role:'Sacerdote e governador; líderes pós-exílio', type:'ot-history',
+        books:'1–2 Crônicas, Esdras, Neemias',
+        detail:'Frequentemente atribuídos ao mesmo "Cronista". Relatam o retorno dos judeus do exílio babilônico e a reconstrução do Templo. Esdras era sacerdote-escriba; Neemias era governador persa de Judá.',
+        canon:'Cânon universal' },
+      { name:'Autor anônimo (Ester)', initials:'ES', dates:'Séc. V–IV a.C.', role:'Autor judeu da diáspora persa', type:'ot-history',
+        books:'Ester',
+        detail:'Provavelmente escrito por um judeu da diáspora. Único livro do AT que não menciona o nome de Deus (versão hebraica). Os capítulos adicionais da versão grega são aceitos apenas pelo catolicismo.',
+        canon:'Cânon universal (versão hebraica); caps. adicionais gregos só no cânon católico' },
+      { name:'Autor anônimo (Tobias)', initials:'TB', dates:'Séc. III–II a.C.', role:'Judeu da diáspora (autor desconhecido)', type:'ot-deutero', deutero:true,
+        books:'Tobias',
+        detail:'Conto de família e fidelidade a Deus, escrito em aramaico ou hebraico. Fragmentos em Qumran. Ensina caridade, oração e família. Provavelmente da diáspora persa ou babilônica.',
+        canon:'Deuterocanônico — aceito por católicos e ortodoxos; ausente no cânon protestante e judaico' },
+      { name:'Autor anônimo (Judite)', initials:'JD', dates:'Séc. II a.C. (c. 150 a.C.)', role:'Autor judeu do período macabeu', type:'ot-deutero', deutero:true,
+        books:'Judite',
+        detail:'Ficção histórica de resistência: Judite decapita o general Holofernes para salvar seu povo. Anacronismos deliberados. Escrito em hebraico, preservado em grego. Contexto: perseguição de Antíoco IV.',
+        canon:'Deuterocanônico — aceito por católicos e ortodoxos; ausente no cânon protestante e judaico' },
+      { name:'Autores anônimos (Macabeus)', initials:'MC', dates:'Séc. II–I a.C. (c. 100 a.C.)', role:'Historiadores do período macabeu', type:'ot-deutero', deutero:true,
+        books:'1 Macabeus, 2 Macabeus',
+        detail:'1 Macabeus: história sóbria da revolta macabeia (175–134 a.C.) em hebraico. 2 Macabeus: resumo da obra de Jasão de Cirene em grego, mais teológico e dramático. Fontes históricas cruciais entre os Testamentos.',
+        canon:'Deuterocanônico — aceito por católicos e ortodoxos; ausente no cânon protestante e judaico' },
+    ]
+  },
+  {
+    label: 'Livros de Sabedoria e Poesia',
+    authors: [
+      { name:'Davi (atribuído) + outros', initials:'DV', dates:'Séc. X–III a.C.', role:'Rei, músico e poeta de Israel', type:'ot-wisdom',
+        books:'Salmos (150 poemas — antologia de múltiplos autores)',
+        detail:'73 salmos têm inscrição "de Davi", mas a coleção é antológica: Asafe, filhos de Coré, Salomão, Moisés (Sl 90) e anônimos. Composta ao longo de séculos, com redação final no pós-exílio.',
+        canon:'Cânon universal' },
+      { name:'Salomão (atribuído)', initials:'SL', dates:'Séc. X a.C. (trad.); obras provavelmente séc. X–III a.C.', role:'Rei de Israel; símbolo da sabedoria', type:'ot-wisdom',
+        books:'Provérbios, Eclesiastes, Cântico dos Cânticos',
+        detail:'Salomão era famoso por sua sabedoria. Provérbios tem núcleos antigos compilados no séc. VI–V a.C. Eclesiastes (Qohélet) e Cântico provavelmente são de autores anônimos posteriores.',
+        canon:'Cânon universal' },
+      { name:'Autor anônimo (Jó)', initials:'JO', dates:'Séc. VII–IV a.C. (debatido)', role:'Poeta anônimo de Israel', type:'ot-wisdom',
+        books:'Jó',
+        detail:'Obra literária poética de autoria desconhecida. Debate filosófico profundo sobre o sofrimento justo. Data muito discutida. Uma das obras mais sofisticadas literariamente de toda a Bíblia.',
+        canon:'Cânon universal' },
+      { name:'Jesus Ben Sirá', initials:'BS', dates:'c. 180 a.C.', role:'Escriba e sábio judeu em Jerusalém', type:'ot-deutero', deutero:true,
+        books:'Eclesiástico (Sirácida / Ben Sirá)',
+        detail:'Único livro deuterocanônico com autor identificado. Seu neto traduziu do hebraico para o grego em Alexandria (~132 a.C.). O texto original em hebraico foi redescoberto na Genizá do Cairo em 1896.',
+        canon:'Deuterocanônico — aceito por católicos e ortodoxos; ausente no cânon protestante e judaico' },
+      { name:'Autor anônimo (Sabedoria)', initials:'SB', dates:'Séc. I a.C. (c. 100–50 a.C.)', role:'Judeu helenista em Alexandria', type:'ot-deutero', deutero:true,
+        books:'Sabedoria (Sabedoria de Salomão)',
+        detail:'Apesar de atribuído a Salomão, escrito em grego por um judeu culto de Alexandria. Combina filosofia grega (estoica e platônica) com teologia judaica. Nunca existiu em hebraico.',
+        canon:'Deuterocanônico — aceito por católicos e ortodoxos; ausente no cânon protestante e judaico' },
+    ]
+  },
+  {
+    label: 'Livros Proféticos',
+    authors: [
+      { name:'Isaías (e escola de Isaías)', initials:'IS', dates:'Séc. VIII–VI a.C.', role:'Profeta em Jerusalém', type:'ot-prophets',
+        books:'Isaías (caps. 1–39: Isaías histórico; caps. 40–66: Dêutero e Trito-Isaías)',
+        detail:'Crítica divide em partes de épocas distintas: Isaías de Jerusalém (séc. VIII), Dêutero-Isaías (exílio, séc. VI) e possivelmente Trito-Isaías (pós-exílio). A tradição vê como obra de um único profeta.',
+        canon:'Cânon universal' },
+      { name:'Jeremias', initials:'JR', dates:'c. 650–585 a.C.', role:'Profeta durante a queda de Jerusalém', type:'ot-prophets',
+        books:'Jeremias, Lamentações (atribuído)',
+        detail:'Profetizou durante os últimos anos de Judá e a destruição de Jerusalém (586 a.C.). Seu secretário Baruc registrou suas palavras. Lamentações é atribuído a ele pela tradição, mas provavelmente é de outro autor.',
+        canon:'Cânon universal' },
+      { name:'Baruc', initials:'BR', dates:'Séc. VI a.C. (trad.); provavelmente séc. II a.C.', role:'Escriba e secretário de Jeremias', type:'ot-deutero', deutero:true,
+        books:'Baruc',
+        detail:'Atribuído a Baruc Ben Nérias, secretário de Jeremias, mas provavelmente escrito no séc. II–I a.C. por autores que usaram sua autoridade. Inclui uma "Carta de Jeremias" (cap. 6) considerada adição ainda mais tardia.',
+        canon:'Deuterocanônico — aceito por católicos e ortodoxos; ausente no cânon protestante e judaico' },
+      { name:'Ezequiel', initials:'EZ', dates:'c. 622–570 a.C.', role:'Sacerdote-profeta no exílio babilônico', type:'ot-prophets',
+        books:'Ezequiel',
+        detail:'Sacerdote deportado para a Babilônia em 597 a.C. Seu livro, com visões extraordinárias (carros de fogo, vale de ossos secos), foi escrito entre 593 e 571 a.C. Um dos profetas mais datados com precisão.',
+        canon:'Cânon universal' },
+      { name:'Daniel (atribuído)', initials:'DN', dates:'Séc. VI a.C. (trad.); provavelmente séc. II a.C.', role:'Sábio judeu na corte babilônica', type:'ot-prophets',
+        books:'Daniel',
+        detail:'A crítica moderna data do séc. II a.C., período macabeu, como literatura apocalíptica pseudônima. No NT é chamado profeta; no judaísmo aparece nos Escritos (Ketuvim), não nos Profetas.',
+        canon:'Cânon universal (versão hebraica); caps. extras de Susana e Bel só no cânon católico' },
+      { name:'Oséias, Joel, Amós, Abdias', initials:'OA', dates:'Séc. IX–VIII a.C.', role:'Primeiros profetas menores', type:'ot-prophets',
+        books:'Oséias, Joel, Amós, Abdias',
+        detail:'Amós (~760 a.C.) foi o primeiro profeta com livro dedicado, um pastor de Tecoa. Oséias profetizou no Norte antes da conquista assíria. Joel (data debatida) e Abdias (o mais curto do AT) completam este grupo.',
+        canon:'Cânon universal' },
+      { name:'Jonas, Miquéias, Naum', initials:'JM', dates:'Séc. VIII a.C.', role:'Profetas menores do séc. VIII', type:'ot-prophets',
+        books:'Jonas, Miquéias, Naum',
+        detail:'Miquéias foi contemporâneo de Isaías. Jonas é considerado um conto didático pelo tom literário e universalista. Naum anunciou a queda de Nínive (c. 612 a.C.).',
+        canon:'Cânon universal' },
+      { name:'Habacuque, Sofonias, Ageu', initials:'HS', dates:'Séc. VII–VI a.C.', role:'Profetas do pré e pós-exílio', type:'ot-prophets',
+        books:'Habacuque, Sofonias, Ageu',
+        detail:'Habacuque questionou Deus sobre o mal (séc. VII a.C.). Sofonias anunciou o "Dia de YHWH" sob Josias. Ageu (c. 520 a.C.) incentivou a reconstrução do Templo após o retorno do exílio.',
+        canon:'Cânon universal' },
+      { name:'Zacarias, Malaquias', initials:'ZM', dates:'Séc. VI–V a.C.', role:'Últimos profetas do AT', type:'ot-prophets',
+        books:'Zacarias, Malaquias',
+        detail:'Zacarias foi contemporâneo de Ageu, com visões apocalípticas. Malaquias ("meu mensageiro", possivelmente pseudônimo) é o último livro profético do AT, séc. V a.C.',
+        canon:'Cânon universal' },
+    ]
+  },
+];
+
+/* ─── COLORS ──────────────────────────────────────── */
+const COLORS = {
+  'nt-apostle':    { color:'#8a7ef0', bg:'rgba(138,126,240,0.13)' },
+  'nt-revelation': { color:'#3a8fd4', bg:'rgba(58,143,212,0.13)' },
+  'nt-companion':  { color:'#3aad85', bg:'rgba(58,173,133,0.13)' },
+  'nt-relative':   { color:'#c07a3a', bg:'rgba(192,122,58,0.13)' },
+  'nt-unknown':    { color:'#888888', bg:'rgba(136,136,136,0.13)' },
+  'ot-torah':      { color:'#c9a55a', bg:'rgba(201,165,90,0.13)' },
+  'ot-history':    { color:'#5aad85', bg:'rgba(90,173,133,0.13)' },
+  'ot-wisdom':     { color:'#9a7fd4', bg:'rgba(154,127,212,0.13)' },
+  'ot-prophets':   { color:'#d47a5a', bg:'rgba(212,122,90,0.13)' },
+  'ot-deutero':    { color:'#5a9ad4', bg:'rgba(90,154,212,0.13)' },
+};
+
+/* ─── RENDER ──────────────────────────────────────── */
+function buildLegend(el, items) {
+  el.innerHTML = items.map(i =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${i.color}"></div>${i.label}</div>`
+  ).join('');
+}
+
+function buildSections(containerId, groups) {
+  const container = document.getElementById(containerId);
+  groups.forEach(g => {
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    const key = containerId + g.label.replace(/\W/g,'_');
+    sec.innerHTML = `
+      <div class="section-header">
+        <div class="section-line"></div>
+        <div class="section-label">${g.label}</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="cards" id="${key}"></div>
+    `;
+    container.appendChild(sec);
+    const grid = sec.querySelector('.cards');
+    g.authors.forEach(a => {
+      const c = COLORS[a.type];
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.setProperty('--acc', c.color);
+      card.innerHTML = `
+        <div class="card-head">
+          <div class="avatar" style="background:${c.bg};color:${c.color};border:1px solid ${c.color}40">${a.initials}</div>
+          <div>
+            <div class="card-name">${a.name}${a.deutero?'<span class="deutero-tag">Deuterocanônico</span>':''}</div>
+            <div class="card-dates">${a.dates}</div>
+          </div>
+        </div>
+        <div class="badge" style="background:${c.bg};color:${c.color}">${a.role}</div>
+        <div class="books">${a.books}</div>
+      `;
+      card.onclick = () => openModal(a, c);
+      grid.appendChild(card);
+    });
+  });
+}
+
+function openModal(a, c) {
+  const av = document.getElementById('m-av');
+  av.style.cssText = `background:${c.bg};color:${c.color};border:1px solid ${c.color}40`;
+  av.textContent = a.initials;
+  document.getElementById('m-name').textContent = a.name;
+  document.getElementById('m-meta').textContent = a.dates + ' · ' + a.role;
+  document.getElementById('m-books').textContent = a.books;
+  document.getElementById('m-detail').textContent = a.detail;
+  document.getElementById('m-canon').textContent = a.canon || '';
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal'))
+    document.getElementById('modal').classList.remove('open');
+}
+
+/* ─── TABS ────────────────────────────────────────── */
+function showTab(tab) {
+  const nt = document.getElementById('t-nt');
+  const ot = document.getElementById('t-ot');
+  const div = document.getElementById('divider');
+  const tabs = document.querySelectorAll('.nav-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  if (tab === 'all') {
+    nt.classList.add('visible'); ot.classList.add('visible'); div.style.display = '';
+  } else if (tab === 'nt') {
+    nt.classList.add('visible'); ot.classList.remove('visible'); div.style.display = 'none';
+  } else {
+    nt.classList.remove('visible'); ot.classList.add('visible'); div.style.display = 'none';
+  }
+}
+
+document.addEventListener('keydown', e => { if (e.key==='Escape') document.getElementById('modal').classList.remove('open'); });
+
+/* ─── INIT ────────────────────────────────────────── */
+buildLegend(document.getElementById('leg-nt'), NT_LEGEND);
+buildLegend(document.getElementById('leg-ot'), OT_LEGEND);
+buildSections('sec-nt', NT_GROUPS);
+buildSections('sec-ot', OT_GROUPS);
+</script>
+</body>
+</html>
